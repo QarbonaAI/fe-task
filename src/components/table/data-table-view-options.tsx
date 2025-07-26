@@ -1,9 +1,5 @@
 "use client"
-
-
-
-import { Settings2 } from "lucide-react"
-
+import { Settings2, SquarePlus } from "lucide-react"
 import { Button } from "../ui/button"
 import {
   DropdownMenu,
@@ -24,6 +20,16 @@ export function DataTableViewOptions<TData>({
 }: DataTableViewOptionsProps<TData>) {
   return (
     <DropdownMenu>
+
+    {/* Add new button to add new product */}
+      <Button
+        variant="outline"
+        size="sm"
+        className="ml-auto hidden h-8 lg:flex mr-2"
+      >
+        <SquarePlus />
+        Add New Product
+      </Button>
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"

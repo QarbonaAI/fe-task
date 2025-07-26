@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import {
   type ColumnDef,
@@ -79,7 +78,8 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
+    // Give padding and align the text to center for better ui
+    <div className="space-y-4 p-2 text-center">
       <DataTableToolbar table={table} filters={filters} />
       <div className="rounded-md border">
         <Table>
@@ -91,9 +91,9 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>
