@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 import { type Table } from "@tanstack/react-table"
+import { useRouter } from "next/navigation"
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
@@ -18,6 +19,7 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
+  const router = useRouter()
   return (
     <DropdownMenu>
 
@@ -26,6 +28,7 @@ export function DataTableViewOptions<TData>({
         variant="outline"
         size="sm"
         className="ml-auto hidden h-8 lg:flex mr-2"
+        onClick={()=>{router.push("/product/create")}}
       >
         <SquarePlus />
         Add New Product

@@ -7,6 +7,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import { ThemeProvider } from "@/components/theme-provider";
+import Toast from "@/components/toast";
 
 export const metadata: Metadata = {
   title: "FE task QuarbonaAI",
@@ -34,6 +35,9 @@ export default function RootLayout({
           <QueryProvider>
             <ToastContainer />
             <div className="h-screen max-h-screen overflow-hidden">
+
+              {/* Add toast to improve the error or succes message */}
+              <Toast />
               {children}
             </div>
           </QueryProvider>

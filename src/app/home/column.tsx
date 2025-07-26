@@ -4,7 +4,12 @@ import * as React from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 
-export const columns: ColumnDef<any>[] = [
+interface ColumnProps {
+  handleDelete: (id: number) => void;
+  router: ReturnType<typeof import("next/navigation").useRouter>;
+}
+
+export const columns = ({ handleDelete, router }: ColumnProps): ColumnDef<any>[] => [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -78,7 +83,7 @@ export const columns: ColumnDef<any>[] = [
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handleUpdate(product)}
+          onClick={() => { router.push(`/product/edit/${product.id}`) }}
         >
           Update
         </Button>
@@ -105,12 +110,4 @@ export const columns: ColumnDef<any>[] = [
 
 const sortIcon = (direction: false | "asc" | "desc") => {
   return direction === "asc" ? "🔼" : direction === "desc" ? "🔽" : "↕️";
-};
-
-const handleUpdate = (product: any) => {
-  console.log("Update clicked", product);
-};
-
-const handleDelete = (id: number) => {
-  console.log("Delete clicked", id);
 };
