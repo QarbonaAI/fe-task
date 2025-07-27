@@ -22,11 +22,8 @@ export default function ProductDetailPage() {
   // Update document title
   useEffect(() => {
     if (product) {
-      document.title = `${product.title} – MyShop`;
+      document.title = `${product.title} MyShop`;
     }
-    return () => {
-      document.title = "FE task QuarbonaAI";
-    };
   }, [product]);
 
   if (isNaN(productId)) {
@@ -94,7 +91,7 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen overflow-auto">
       <Navbar />
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto p-8">
         <Button
           variant="ghost"
           onClick={() => router.back()}
@@ -157,12 +154,6 @@ export default function ProductDetailPage() {
                   <span className="font-medium">Stock:</span> {product.stock} units
                 </div>
               </div>
-            </div>
-
-            <div className="pt-4">
-              <Button size="lg" className="w-full md:w-auto">
-                Add to Cart
-              </Button>
             </div>
           </div>
         </div>
