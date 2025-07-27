@@ -131,10 +131,7 @@ export default function ProductsPage() {
 
   // Update document title
   useEffect(() => {
-    document.title = "All Products – MyShop";
-    return () => {
-      document.title = "FE task QuarbonaAI";
-    };
+    document.title = "All Products MyShop";
   }, []);
 
   if (error) {

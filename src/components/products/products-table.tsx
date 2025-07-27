@@ -5,14 +5,13 @@ import {
   type ColumnDef,
   type SortingState,
   type ColumnFiltersState,
-  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { DataTableToolbar } from "@/components/table/data-table-toolbar";
+
 import {
   Table,
   TableBody,
@@ -50,7 +49,6 @@ export function ProductsTable<TData, TValue>({
   onPageSizeChange,
 }: ProductsTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -61,7 +59,6 @@ export function ProductsTable<TData, TValue>({
     columns,
     state: {
       sorting,
-      columnVisibility,
       rowSelection,
       columnFilters,
     },
@@ -69,7 +66,6 @@ export function ProductsTable<TData, TValue>({
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -79,7 +75,6 @@ export function ProductsTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

@@ -33,28 +33,7 @@ export const productsApi = {
         category: product.category,
       });
       return response.data as Product;
-    } catch (error: unknown) {
-      const axiosError = error as { response?: { data: unknown; status: number } };
-      
-      // DummyJSON API limitation: some products can't be updated
-      // For demo purposes, we'll simulate the update locally
-      if (axiosError.response?.status === 404) {
-        // Return a simulated updated product
-        return {
-          id: product.id,
-          title: product.title,
-          description: product.description,
-          price: product.price,
-          brand: product.brand,
-          category: product.category,
-          discountPercentage: 0,
-          rating: 4.5,
-          stock: 100,
-          thumbnail: 'https://via.placeholder.com/150',
-          images: ['https://via.placeholder.com/150'],
-        } as Product;
-      }
-      
+    } catch (error) {  
       throw error;
     }
   },
