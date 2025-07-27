@@ -41,12 +41,18 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filters?: FilterOption[];
+  sorting?: SortingState;
+  onSortingChange?: (updater: SortingState | ((old: SortingState) => SortingState)) => void;
+  showPagination?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filters,
+  sorting: controlledSorting,
+  onSortingChange,
+  showPagination = true,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -56,23 +62,25 @@ export function DataTable<TData, TValue>({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
+  const isControlled = controlledSorting !== undefined && onSortingChange !== undefined;
+
   const table = useReactTable({
     data,
     columns,
     state: {
-      sorting,
+      sorting: isControlled ? controlledSorting : sorting,
       columnVisibility,
       rowSelection,
       columnFilters,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
+    onSortingChange: isControlled ? onSortingChange : setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: showPagination ? getPaginationRowModel() : undefined,
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
@@ -129,7 +137,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      {showPagination && <DataTablePagination table={table} />}
     </div>
   );
 }

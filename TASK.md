@@ -54,8 +54,8 @@ Enhance the existing Next.js boilerplate by integrating the [DummyJSON Products 
 
 - Use the product name (or relevant context) as the document `<title>` for each page.
   - Example:
-    - `/products`: “All Products – MyShop”
-    - `/products/12`: “iPhone 9 – MyShop”
+    - `/products`: “All Products – QuarbonaAI”
+    - `/products/12`: “iPhone 9 – QuarbonaAI”
 
 ### Bonus (Optional)
 If you complete the core functionality early and want to take your submission further, consider implementing one or more of the following enhancements:
