@@ -1,5 +1,7 @@
 # MyShop - Product Management System
 
+**Developer**: Anshum Dwivedi
+
 A comprehensive product management system built with Next.js, TanStack Query, and modern web technologies. This application provides full CRUD operations for products with real-time search, sorting, pagination, and a beautiful responsive UI.
 
 ## 🚀 Features
