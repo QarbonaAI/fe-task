@@ -81,7 +81,7 @@ export const createProductColumns = (
     id: "actions",
     cell: ({ row }) => (
       <DataTableRowActions
-        row={row.original as Product & { label?: string }}
+        row={row.original}
         onEdit={() => onEdit(row.original)}
         onDelete={() => onDelete(row.original.id)}
       />

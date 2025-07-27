@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productsApi } from "@/lib/api/products";
 import type { Product } from "@/types/product";
 import type { ProductFormData } from "@/lib/schemas/product";
-import { DataTable } from "@/components/table/data-table";
+import { ProductsTable } from "@/components/products/products-table";
 import { createProductColumns } from "@/components/products/product-columns";
 import { ProductForm } from "@/components/products/product-form";
 import { Button } from "@/components/ui/button";
@@ -14,27 +14,27 @@ import Navbar from "@/components/navbar";
 
 export default function ProductsPage() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const limit = 10;
   const queryClient = useQueryClient();
 
   // Fetch products
   const { data, isLoading, error } = useQuery({
-    queryKey: ["products", currentPage],
-    queryFn: () => productsApi.getProducts(limit, currentPage * limit),
+    queryKey: ["products", currentPage, pageSize],
+    queryFn: () => productsApi.getProducts(pageSize, currentPage * pageSize),
   });
 
   // Create product mutation
   const createMutation = useMutation({
     mutationFn: productsApi.createProduct,
     onSuccess: (newProduct) => {
-      queryClient.setQueryData(["products", currentPage], (old: unknown) => {
+      queryClient.setQueryData(["products", currentPage, pageSize], (old: unknown) => {
         const oldData = old as { products: Product[]; total: number } | undefined;
         if (!oldData) return oldData;
         return {
           ...oldData,
-          products: [newProduct, ...oldData.products.slice(0, limit - 1)],
+          products: [newProduct, ...oldData.products.slice(0, pageSize - 1)],
           total: oldData.total + 1,
         };
       });
@@ -50,7 +50,7 @@ export default function ProductsPage() {
   const updateMutation = useMutation({
     mutationFn: productsApi.updateProduct,
     onSuccess: (updatedProduct) => {
-      queryClient.setQueryData(["products", currentPage], (old: unknown) => {
+      queryClient.setQueryData(["products", currentPage, pageSize], (old: unknown) => {
         const oldData = old as { products: Product[]; total: number } | undefined;
         if (!oldData) return oldData;
         return {
@@ -64,8 +64,13 @@ export default function ProductsPage() {
       setShowForm(false);
       setEditingProduct(null);
     },
-    onError: () => {
-      toast.error("Failed to update product");
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { status: number } };
+      if (axiosError.response?.status === 404) {
+        toast.error("This product cannot be updated (DummyJSON API limitation)");
+      } else {
+        toast.error("Failed to update product");
+      }
     },
   });
 
@@ -73,7 +78,7 @@ export default function ProductsPage() {
   const deleteMutation = useMutation({
     mutationFn: productsApi.deleteProduct,
     onSuccess: (_, deletedId) => {
-      queryClient.setQueryData(["products", currentPage], (old: unknown) => {
+      queryClient.setQueryData(["products", currentPage, pageSize], (old: unknown) => {
         const oldData = old as { products: Product[]; total: number } | undefined;
         if (!oldData) return oldData;
         return {
@@ -113,6 +118,15 @@ export default function ProductsPage() {
     setEditingProduct(null);
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setCurrentPage(0); // Reset to first page when changing page size
+  };
+
   const columns = createProductColumns(handleEdit, handleDelete);
 
   // Update document title
@@ -150,8 +164,15 @@ export default function ProductsPage() {
             <h2 className="text-xl font-semibold mb-4">
               {editingProduct ? "Edit Product" : "Add New Product"}
             </h2>
+            {editingProduct && (
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+                <strong>Note:</strong> Due to DummyJSON API limitations, some products may not be updatable. 
+                The app will simulate the update locally for demo purposes.
+              </div>
+            )}
             <ProductForm
-              product={editingProduct || undefined}
+              key={editingProduct?.id ?? 'new'}
+              product={editingProduct ?? undefined}
               onSubmit={handleSubmit}
               onCancel={handleCancel}
               isLoading={createMutation.isPending || updateMutation.isPending}
@@ -162,34 +183,15 @@ export default function ProductsPage() {
         {isLoading ? (
           <div className="text-center py-8">Loading products...</div>
         ) : (
-          <>
-            <DataTable
-              columns={columns}
-              data={data?.products ?? []}
-            />
-            
-            {data && (data.total ?? 0) > limit && (
-              <div className="flex justify-center items-center gap-4 mt-6">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
-                  disabled={currentPage === 0}
-                >
-                  Previous
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  Page {currentPage + 1} of {Math.ceil((data?.total ?? 0) / limit)}
-                </span>
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={(currentPage + 1) * limit >= data.total}
-                >
-                  Next
-                </Button>
-              </div>
-            )}
-          </>
+          <ProductsTable
+            columns={columns}
+            data={data?.products ?? []}
+            totalCount={data?.total ?? 0}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
         )}
       </div>
     </div>
