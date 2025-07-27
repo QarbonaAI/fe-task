@@ -1,30 +1,26 @@
-import QueryProvider from "@/lib/query-provider";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "@/styles/globals.css";
-
+import { ThemeProvider } from "@/components/theme-provider";
+import QueryProvider from "@/lib/query-provider";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { type Metadata } from "next";
-import { Geist } from "next/font/google";
-import { ToastContainer } from "react-toastify";
-import { ThemeProvider } from "@/components/theme-provider";
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FE task QuarbonaAI",
-  description: "fe task for QuarbonaAI",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  title: "MyShop - Product Management",
+  description: "Manage your products with ease",
 };
-
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -32,10 +28,21 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            <ToastContainer />
-            <div className="h-screen max-h-screen overflow-hidden">
+            <div className="mx-auto max-w-7xl px-4">
               {children}
             </div>
+            <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
           </QueryProvider>
         </ThemeProvider>
       </body>
