@@ -1,3 +1,7 @@
+
+Sarvesh Pandey
+Contact Number -7266857353
+
 # Frontend Task: Product Table with API Integration, Zod Validation & Navigation
 
 ## Objective
