@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productsApi } from "@/lib/api/products";
 import type { Product } from "@/types/product";
-import type { ProductFormData } from "@/lib/schemas/product";
 import { ProductsTable } from "@/components/products/products-table";
 import { createProductColumns } from "@/components/products/product-columns";
-import { ProductForm } from "@/components/products/product-form";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import Navbar from "@/components/navbar";
@@ -15,64 +14,24 @@ import Navbar from "@/components/navbar";
 export default function ProductsPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   // Fetch products
   const { data, isLoading, error } = useQuery({
     queryKey: ["products", currentPage, pageSize],
-    queryFn: () => productsApi.getProducts(pageSize, currentPage * pageSize),
-  });
-
-  // Create product mutation
-  const createMutation = useMutation({
-    mutationFn: productsApi.createProduct,
-    onSuccess: (newProduct) => {
-      queryClient.setQueryData(["products", currentPage, pageSize], (old: unknown) => {
-        const oldData = old as { products: Product[]; total: number } | undefined;
-        if (!oldData) return oldData;
-        return {
-          ...oldData,
-          products: [newProduct, ...oldData.products.slice(0, pageSize - 1)],
-          total: oldData.total + 1,
-        };
-      });
-      toast.success("Product created successfully");
-      setShowForm(false);
-    },
-    onError: () => {
-      toast.error("Failed to create product");
+    queryFn: () => {
+      console.log("Fetching products:", { pageSize, skip: currentPage * pageSize });
+      return productsApi.getProducts(pageSize, currentPage * pageSize);
     },
   });
 
-  // Update product mutation
-  const updateMutation = useMutation({
-    mutationFn: productsApi.updateProduct,
-    onSuccess: (updatedProduct) => {
-      queryClient.setQueryData(["products", currentPage, pageSize], (old: unknown) => {
-        const oldData = old as { products: Product[]; total: number } | undefined;
-        if (!oldData) return oldData;
-        return {
-          ...oldData,
-          products: oldData.products.map((p: Product) =>
-            p.id === updatedProduct.id ? updatedProduct : p
-          ),
-        };
-      });
-      toast.success("Product updated successfully");
-      setShowForm(false);
-      setEditingProduct(null);
-    },
-    onError: (error: unknown) => {
-      const axiosError = error as { response?: { status: number } };
-      if (axiosError.response?.status === 404) {
-        toast.error("This product cannot be updated (DummyJSON API limitation)");
-      } else {
-        toast.error("Failed to update product");
-      }
-    },
-  });
+  // Debug: log when data changes
+  useEffect(() => {
+    console.log("Products data updated:", data);
+  }, [data]);
+
+
 
   // Delete product mutation
   const deleteMutation = useMutation({
@@ -94,28 +53,14 @@ export default function ProductsPage() {
     },
   });
 
-  const handleSubmit = (formData: ProductFormData) => {
-    if (editingProduct) {
-      updateMutation.mutate({ ...formData, id: editingProduct.id });
-    } else {
-      createMutation.mutate(formData);
-    }
-  };
-
   const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    setShowForm(true);
+    router.push(`/products/edit/${product.id}`);
   };
 
   const handleDelete = (id: number) => {
     if (confirm("Are you sure you want to delete this product?")) {
       deleteMutation.mutate(id);
     }
-  };
-
-  const handleCancel = () => {
-    setShowForm(false);
-    setEditingProduct(null);
   };
 
   const handlePageChange = (page: number) => {
@@ -156,23 +101,8 @@ export default function ProductsPage() {
         <div className="container mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">All Products</h1>
-          <Button onClick={() => setShowForm(true)}>Add Product</Button>
+          <Button onClick={() => router.push("/products/new")}>Add Product</Button>
         </div>
-
-        {showForm && (
-          <div className="mb-8 p-6 border rounded-lg bg-card">
-            <h2 className="text-xl font-semibold mb-4">
-              {editingProduct ? "Edit Product" : "Add New Product"}
-            </h2>
-            <ProductForm
-              key={editingProduct?.id ?? 'new'}
-              product={editingProduct ?? undefined}
-              onSubmit={handleSubmit}
-              onCancel={handleCancel}
-              isLoading={createMutation.isPending || updateMutation.isPending}
-            />
-          </div>
-        )}
 
         {isLoading ? (
           <div className="text-center py-8">Loading products...</div>
