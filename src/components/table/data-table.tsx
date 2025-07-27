@@ -11,13 +11,14 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
 } from "@tanstack/react-table";
 import { useReactTable } from "@tanstack/react-table";
+import { AnimatePresence } from "framer-motion";
 
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
+import { AnimatedTableRow } from "../animated-table-row";
 import {
   Table,
   TableBody,
@@ -26,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { Skeleton } from "../ui/skeleton";
 
 interface FilterOption {
   columnId: string;
@@ -41,12 +43,29 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filters?: FilterOption[];
+  onRowClick?: (row: TData) => void;
+  isLoading?: boolean;
+}
+
+// Skeleton row component for loading state
+function SkeletonRow({ columns }: { columns: ColumnDef<any, any>[] }) {
+  return (
+    <TableRow>
+      {columns.map((column, index) => (
+        <TableCell key={index} className="h-16">
+          <Skeleton className="h-4 w-full" />
+        </TableCell>
+      ))}
+    </TableRow>
+  );
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filters,
+  onRowClick,
+  isLoading = false,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -64,6 +83,11 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      // Disable pagination state to prevent infinite loops
+      pagination: {
+        pageIndex: 0,
+        pageSize: data.length, // Set page size to data length to show all items
+      },
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -72,10 +96,12 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    // Disable pagination functionality completely
+    manualPagination: true,
+    pageCount: 1,
   });
 
   return (
@@ -100,36 +126,45 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+            <AnimatePresence mode="wait">
+              {isLoading ? (
+                // Show skeleton loading rows
+                Array.from({ length: 10 }).map((_, index) => (
+                  <SkeletonRow key={`skeleton-${index}`} columns={columns} />
+                ))
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row, index) => (
+                  <AnimatedTableRow
+                    key={row.id}
+                    product={row.original as any}
+                    index={index}
+                    onClick={() => onRowClick?.(row.original)}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </AnimatedTableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
+              )}
+            </AnimatePresence>
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      {/* <DataTablePagination table={table} /> */}
     </div>
   );
 }
