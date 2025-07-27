@@ -16,14 +16,19 @@ interface PaginationStore {
   setTotalCount: (totalCount: number) => void;
   setTotalNext: (hasNext: boolean, totalCount: number) => void;
   resetPagination: () => void;
+  clearAccumulatedCache: () => void;
 }
 
 export const usePaginationStore = create<PaginationStore>((set) => ({
-  pagination: { pageIndex: 0, pageSize: 40, has_next: false, total_count: 0 },
+  pagination: { pageIndex: 0, pageSize: 10, has_next: false, total_count: 0 },
   setPagination: (pagination: PaginationProps) => set({ pagination }),
   setPerPage: (perPage: number) =>
     set((state) => ({
-      pagination: { ...state.pagination, pageSize: perPage },
+      pagination: { 
+        ...state.pagination, 
+        pageSize: perPage,
+        pageIndex: 0 // Reset to first page when changing page size
+      },
     })),
   setPage: (page: number) =>
     set((state) => ({
@@ -54,4 +59,8 @@ export const usePaginationStore = create<PaginationStore>((set) => ({
         total_count: 0,
       },
     })),
+  clearAccumulatedCache: () => {
+    // This will be called when page size changes to clear accumulated cache
+    // The actual cache clearing will be handled in the hook
+  },
 }));
