@@ -36,16 +36,19 @@ interface FilterOption {
   }[];
 }
 
+// Add new prop to navigate on detail page
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filters?: FilterOption[];
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filters,
+  onRowClick
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -105,6 +108,8 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => onRowClick?.(row.original)}
+                  className="cursor-pointer hover:bg-muted transition"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

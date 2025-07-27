@@ -27,7 +27,7 @@ export function DataTableViewOptions<TData>({
       <Button
         variant="outline"
         size="sm"
-        className="ml-auto hidden h-8 lg:flex mr-2"
+        className="ml-auto hidden h-8 lg:flex mr-2 cursor-pointer"
         onClick={()=>{router.push("/product/create")}}
       >
         <SquarePlus />
@@ -37,7 +37,7 @@ export function DataTableViewOptions<TData>({
         <Button
           variant="outline"
           size="sm"
-          className="ml-auto hidden h-8 lg:flex"
+          className="ml-auto hidden h-8 lg:flex cursor-pointer"
         >
           <Settings2 />
           View

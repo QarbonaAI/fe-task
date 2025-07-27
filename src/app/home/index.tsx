@@ -15,7 +15,14 @@ const Home = () => {
 
   return (
     <div className="overflow-auto max-h-[600px]">
-      <DataTable columns={columns({ handleDelete, router })} data={products} />
+      <DataTable 
+        columns={columns({ handleDelete, router })} 
+        data={products}
+        onRowClick={(product) => {
+          localStorage.setItem("selectedProduct", JSON.stringify(product));
+          router.push(`/product/view/${product.id}`);
+        }}
+      />
     </div>
   );
 };

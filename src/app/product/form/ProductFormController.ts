@@ -1,3 +1,5 @@
+// Create a controller to add and update product
+
 "use client";
 import type { ProductFormData, Review } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -14,7 +16,7 @@ export const ProductFormController = (
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = React.useState<ProductFormData>({
-    id:"",
+    id: "",
     title: "",
     description: "",
     category: "",
@@ -54,82 +56,58 @@ export const ProductFormController = (
     thumbnail: "",
   });
 
+  //  Mutation: Add Product
   const addProductMutation = useMutation({
     mutationFn: async (newProduct: ProductFormData) => {
-      const response = await axios.post(
+      const res = await axios.post(
         "https://dummyjson.com/products/add",
         newProduct,
       );
-      return response.data;
+      return res.data;
     },
     onSuccess: (newProduct) => {
-      queryClient.setQueryData(["products"], (old: any[]) => {
-        if (!old) return [newProduct];
-        return [...old, newProduct];
-      });
-
-      toast.success("Product added successfully", {
-        style: {
-          backgroundColor: "#e0f7fa",
-          color: "#00796b",
-          fontWeight: "bold",
-        },
-      });
+      queryClient.setQueryData(["products"], (old: any[] = []) => [
+        ...old,
+        newProduct,
+      ]);
+      toast.success("Product added successfully");
       router.push("/");
     },
     onError: () => {
-      toast.error("Failed to add product", {
-        style: {
-          backgroundColor: "#ffe5e5",
-          color: "#d32f2f",
-          fontWeight: "bold",
-        },
-      });
+      toast.error("Failed to add product");
     },
   });
 
+  //  Mutation: Update Product
   const updateProductMutation = useMutation({
-    mutationFn: async (updatedProduct: ProductFormData) => {
-      const response = await axios.put(
+    mutationFn: async (updatedFields: Partial<ProductFormData>) => {
+      const res = await axios.put(
         `https://dummyjson.com/products/${productId}`,
-        updatedProduct,
+        updatedFields,
       );
-      return response.data;
+      return res.data;
     },
     onSuccess: (updatedProduct) => {
-      // Update cached data in TanStack Query
       queryClient.setQueryData(["products"], (old: any[] = []) =>
-        old.map((item) =>
-          item.id === updatedProduct.id ? updatedProduct : item,
+        old.map((product) =>
+          product.id === updatedProduct.id
+            ? { ...product, ...updatedProduct }
+            : product,
         ),
       );
-
-      toast.success("Product updated successfully", {
-        style: {
-          backgroundColor: "#e0f7fa",
-          color: "#00796b",
-          fontWeight: "bold",
-        },
-      });
-
+      toast.success("Product updated successfully");
       router.push("/");
     },
-    onError: () => {
-      toast.error("Failed to update product", {
-        style: {
-          backgroundColor: "#ffe5e5",
-          color: "#d32f2f",
-          fontWeight: "bold",
-        },
-      });
+    onError: (err) => {
+      toast.error("Failed to update product");
     },
   });
 
+  //  Field Handlers
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    if (!name) return;
 
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
@@ -143,16 +121,18 @@ export const ProductFormController = (
         }));
       }
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
+
   const handleTagChange = (index: number, value: string) => {
     const newTags = [...formData.tags];
-    if (index < newTags.length) {
-      newTags[index] = value;
-      setFormData({ ...formData, tags: newTags });
-    }
+    newTags[index] = value;
+    setFormData({ ...formData, tags: newTags });
   };
 
   const addTag = () => {
@@ -165,13 +145,8 @@ export const ProductFormController = (
     value: string,
   ) => {
     const newReviews = [...formData.reviews];
-    if (index < newReviews.length) {
-      newReviews[index] = {
-        ...newReviews[index],
-        [field]: value,
-      } as Review;
-      setFormData({ ...formData, reviews: newReviews });
-    }
+    newReviews[index] = { ...newReviews[index], [field]: value } as Review;
+    setFormData({ ...formData, reviews: newReviews });
   };
 
   const addReview = () => {
@@ -199,10 +174,8 @@ export const ProductFormController = (
       const reader = new FileReader();
       reader.onloadend = () => {
         const newImages = [...formData.images];
-        if (index < newImages.length) {
-          newImages[index] = reader.result as string;
-          setFormData({ ...formData, images: newImages });
-        }
+        newImages[index] = reader.result as string;
+        setFormData({ ...formData, images: newImages });
       };
       reader.readAsDataURL(file);
     }
@@ -239,72 +212,105 @@ export const ProductFormController = (
     }
   };
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  //  Submit Handler with Filtered Fields for Update
+ const handleSubmit = (e: FormEvent) => {
+   e.preventDefault();
 
-    const submissionData = {
-      ...formData,
-      meta: {
-        ...formData.meta,
-        updatedAt: new Date().toISOString(),
-        createdAt: isEditMode
-          ? formData.meta.createdAt
-          : new Date().toISOString(),
-      },
-    };
+   const allowedFields = [
+     "title",
+     "description",
+     "category",
+     "price",
+     "discountPercentage",
+     "rating",
+     "stock",
+     "tags",
+     "brand",
+     "sku",
+     "weight",
+     "dimensions",
+     "warrantyInformation",
+     "shippingInformation",
+     "availabilityStatus",
+     "reviews",
+     "returnPolicy",
+     "minimumOrderQuantity",
+     "meta",
+     "images",
+     "thumbnail",
+   ];
 
-    if (isEditMode && productId) {
-      updateProductMutation.mutate(submissionData);
-    } else {
-      addProductMutation.mutate({
-        ...submissionData,
-        id: 31, // For dummy product
-      });
-    }
-  };
+   const filteredData = Object.fromEntries(
+     Object.entries(formData).filter(([key]) => allowedFields.includes(key)),
+   );
 
-  React.useEffect(() => {
-    const fetchProduct = async () => {
-      if (isEditMode && productId) {
-        try {
-          const res = await axios.get(
-            `https://dummyjson.com/products/${productId}`,
-          );
-          const data = res.data;
+   if (isEditMode && productId) {
+     updateProductMutation.mutate(filteredData as Partial<ProductFormData>);
+   } else {
+     addProductMutation.mutate({
+       ...formData,
+       id: 31, // dummy ID
+     });
+   }
+ };
 
-          setFormData({
-            ...formData,
-            ...data,
-            dimensions: {
-              width: data.dimensions?.width || "",
-              height: data.dimensions?.height || "",
-              depth: data.dimensions?.depth || "",
-            },
-            meta: {
-              barcode: data.meta?.barcode || "",
-              qrCode: data.meta?.qrCode || "",
-              createdAt: data.meta?.createdAt || new Date().toISOString(),
-            },
-            images: data.images || [""],
-            reviews: data.reviews || [
-              {
-                rating: "",
-                comment: "",
-                date: new Date().toISOString(),
-                reviewerName: "",
-                reviewerEmail: "",
-              },
-            ],
-            tags: data.tags || [""],
-          });
-        } catch (err) {
-          toast.error("Failed to fetch product");
-        }
-      }
-    };
+  //  Prefill form in edit mode
+ React.useEffect(() => {
+   const fetchProduct = async () => {
+     if (isEditMode && productId) {
+       const cachedProducts: ProductFormData[] =
+         queryClient.getQueryData(["products"]) || [];
 
-    fetchProduct();
-  }, [isEditMode, productId]);
+       let productFromCache = cachedProducts.find(
+         (p) => p.id === parseInt(productId),
+       );
+
+       // 🔁 Fallback to API if not found in cache
+       if (!productFromCache) {
+         try {
+           const res = await axios.get(
+             `https://dummyjson.com/products/${productId}`,
+           );
+           productFromCache = res.data;
+         } catch (error) {
+           toast.error("Failed to fetch product from API.");
+           return;
+         }
+       }
+
+       if (productFromCache) {
+         setFormData((prev) => ({
+           ...prev,
+           ...productFromCache,
+           dimensions: {
+             width: productFromCache.dimensions?.width || "",
+             height: productFromCache.dimensions?.height || "",
+             depth: productFromCache.dimensions?.depth || "",
+           },
+           meta: {
+             barcode: productFromCache.meta?.barcode || "",
+             qrCode: productFromCache.meta?.qrCode || "",
+             createdAt:
+               productFromCache.meta?.createdAt || new Date().toISOString(),
+           },
+           images: productFromCache.images || [""],
+           reviews: productFromCache.reviews || [
+             {
+               rating: "",
+               comment: "",
+               date: new Date().toISOString(),
+               reviewerName: "",
+               reviewerEmail: "",
+             },
+           ],
+           tags: productFromCache.tags || [""],
+         }));
+       }
+     }
+   };
+
+   fetchProduct();
+ }, [isEditMode, productId, queryClient]);
 
   return {
     handleChange,

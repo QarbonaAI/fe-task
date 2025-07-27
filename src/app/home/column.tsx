@@ -83,7 +83,11 @@ export const columns = ({ handleDelete, router }: ColumnProps): ColumnDef<any>[]
         <Button
           variant="outline"
           size="sm"
-          onClick={() => { router.push(`/product/edit/${product.id}`) }}
+          onClick={(e) => {
+            e.stopPropagation(); 
+            router.push(`/product/edit/${product.id}`);
+          }}
+          className="cursor-pointer"
         >
           Update
         </Button>
@@ -99,7 +103,11 @@ export const columns = ({ handleDelete, router }: ColumnProps): ColumnDef<any>[]
         <Button
           variant="destructive"
           size="sm"
-          onClick={() => handleDelete(product.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(product.id);
+          }}
+          className="cursor-pointer"
         >
           Delete
         </Button>

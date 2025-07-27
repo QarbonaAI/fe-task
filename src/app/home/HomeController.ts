@@ -1,3 +1,5 @@
+// Create controller to fetch and delete product
+
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -17,14 +19,12 @@ export const HomeController = () => {
     refetchOnWindowFocus: true,
   });
 
-  // Mutation to delete product from API
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       await axios.delete(`https://dummyjson.com/products/${id}`);
       return id;
     },
     onSuccess: (deletedId: number) => {
-      // Update cache manually after successful delete
       queryClient.setQueryData(["products"], (old: any[] = []) =>
         old.filter((item) => item.id !== deletedId),
       );
