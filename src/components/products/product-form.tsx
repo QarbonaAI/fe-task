@@ -27,6 +27,8 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading }: ProductF
       price: product.price,
       brand: product.brand,
       category: product.category,
+      rating: product.rating,
+      stock: product.stock,
     } : undefined,
   });
 
@@ -75,7 +77,21 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading }: ProductF
           <p className="text-sm text-red-600 mt-1">{errors.price.message}</p>
         )}
       </div>
-
+      <div>
+        <label htmlFor="rating" className="block text-sm font-medium mb-1">
+          Rating
+        </label>
+        <Input
+          id="rating"
+          type="number"
+          step="0.1"
+          {...register("rating", { valueAsNumber: true })}
+          placeholder="Enter rating"
+        />
+        {errors.rating && (
+          <p className="text-sm text-red-600 mt-1">{errors.rating.message}</p>
+        )}
+      </div>
       <div>
         <label htmlFor="brand" className="block text-sm font-medium mb-1">
           Brand
@@ -101,6 +117,21 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading }: ProductF
         />
         {errors.category && (
           <p className="text-sm text-red-600 mt-1">{errors.category.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="stock" className="block text-sm font-medium mb-1">
+          Stock
+        </label>
+        <Input
+          id="stock"
+          type="number"
+          {...register("stock", { valueAsNumber: true })}
+          placeholder="Enter stock quantity"
+        />
+        {errors.stock && (
+          <p className="text-sm text-red-600 mt-1">{errors.stock.message}</p>
         )}
       </div>
 

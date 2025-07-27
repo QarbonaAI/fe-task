@@ -136,11 +136,13 @@ export default function ProductsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen overflow-auto">
+      <div className="min-h-screen">
         <Navbar />
-        <div className="container mx-auto py-8">
-          <div className="text-center text-red-600">
-            Error loading products. Please try again.
+        <div className="pt-20 pb-8 px-8">
+          <div className="container mx-auto">
+            <div className="text-center text-red-600">
+              Error loading products. Please try again.
+            </div>
           </div>
         </div>
       </div>
@@ -148,9 +150,10 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen overflow-auto">
+    <div className="min-h-screen">
       <Navbar />
-      <div className="container mx-auto p-8">
+      <div className="pt-20 pb-8 px-8">
+        <div className="container mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">All Products</h1>
           <Button onClick={() => setShowForm(true)}>Add Product</Button>
@@ -161,12 +164,6 @@ export default function ProductsPage() {
             <h2 className="text-xl font-semibold mb-4">
               {editingProduct ? "Edit Product" : "Add New Product"}
             </h2>
-            {editingProduct && (
-              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-                <strong>Note:</strong> Due to DummyJSON API limitations, some products may not be updatable. 
-                The app will simulate the update locally for demo purposes.
-              </div>
-            )}
             <ProductForm
               key={editingProduct?.id ?? 'new'}
               product={editingProduct ?? undefined}
@@ -190,6 +187,7 @@ export default function ProductsPage() {
             onPageSizeChange={handlePageSizeChange}
           />
         )}
+        </div>
       </div>
     </div>
   );

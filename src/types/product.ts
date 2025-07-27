@@ -25,6 +25,8 @@ export interface CreateProductRequest {
   price: number;
   brand: string;
   category: string;
+  rating: number;
+  stock: number;
 }
 
 export interface UpdateProductRequest extends CreateProductRequest {

@@ -28,10 +28,12 @@ export default function ProductDetailPage() {
 
   if (isNaN(productId)) {
     return (
-      <div className="min-h-screen overflow-auto">
+      <div className="min-h-screen">
         <Navbar />
-        <div className="container mx-auto py-8">
-          <div className="text-center text-red-600">Invalid product ID</div>
+        <div className="pt-20 pb-8 px-8">
+          <div className="container mx-auto">
+            <div className="text-center text-red-600">Invalid product ID</div>
+          </div>
         </div>
       </div>
     );
@@ -39,19 +41,21 @@ export default function ProductDetailPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen overflow-auto">
+      <div className="min-h-screen">
         <Navbar />
-        <div className="container mx-auto py-8">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <div className="text-center text-red-600">
-            Error loading product. Please try again.
+        <div className="pt-20 pb-8 px-8">
+          <div className="container mx-auto">
+            <Button
+              variant="ghost"
+              onClick={() => router.back()}
+              className="mb-4"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <div className="text-center text-red-600">
+              Error loading product. Please try again.
+            </div>
           </div>
         </div>
       </div>
@@ -60,10 +64,12 @@ export default function ProductDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen overflow-auto">
+      <div className="min-h-screen">
         <Navbar />
-        <div className="container mx-auto py-8">
-          <div className="text-center py-8">Loading product...</div>
+        <div className="pt-20 pb-8 px-8">
+          <div className="container mx-auto">
+            <div className="text-center py-8">Loading product...</div>
+          </div>
         </div>
       </div>
     );
@@ -71,27 +77,30 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen overflow-auto">
+      <div className="min-h-screen">
         <Navbar />
-        <div className="container mx-auto py-8">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <div className="text-center">Product not found</div>
+        <div className="pt-20 pb-8 px-8">
+          <div className="container mx-auto">
+            <Button
+              variant="ghost"
+              onClick={() => router.back()}
+              className="mb-4"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <div className="text-center">Product not found</div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen overflow-auto">
+    <div className="min-h-screen">
       <Navbar />
-      <div className="container mx-auto p-8">
+      <div className="pt-20 pb-8 px-8">
+        <div className="container mx-auto">
         <Button
           variant="ghost"
           onClick={() => router.back()}
@@ -156,6 +165,7 @@ export default function ProductDetailPage() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

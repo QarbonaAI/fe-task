@@ -31,6 +31,8 @@ export const productsApi = {
         price: product.price,
         brand: product.brand,
         category: product.category,
+        rating: product.rating,
+        stock: product.stock,
       });
       return response.data as Product;
     } catch (error) {  
