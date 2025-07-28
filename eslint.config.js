@@ -30,6 +30,9 @@ export default tseslint.config(
       "error",
       { checksVoidReturn: { attributes: false } },
     ],
+    "@typescript-eslint/prefer-nullish-coalescing": "warn",
+    "@typescript-eslint/no-unnecessary-type-assertion": "warn",
+    "@next/next/no-img-element": "warn",
   },
   },
   {
