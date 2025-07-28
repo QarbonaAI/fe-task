@@ -102,7 +102,7 @@ Integrate this schema with `react-hook-form` to validate form inputs and display
    URL: `https://github.com/QarbonaAI/fe-task`
 2. **Create a private GitHub repository** under your own account.
 4. Add the following GitHub username(s) as collaborators:
-   - `aditansh`, `AchintyaQarbona`, `siddharth1825`, `abhitrueprogrammer`
+   - `AchintyaQarbona`, `siddharth1825`
 5. Submit the **private repository link** as part of your application.
 
 * Make sure to add your full name in the README of the private repo you create.
