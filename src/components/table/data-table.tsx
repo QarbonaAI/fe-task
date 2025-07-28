@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import {
   type ColumnDef,
@@ -37,16 +36,19 @@ interface FilterOption {
   }[];
 }
 
+// Add new prop to navigate on detail page
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filters?: FilterOption[];
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filters,
+  onRowClick
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -79,7 +81,8 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
+    // Give padding and align the text to center for better ui
+    <div className="space-y-4 p-2 text-center">
       <DataTableToolbar table={table} filters={filters} />
       <div className="rounded-md border">
         <Table>
@@ -91,9 +94,9 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -105,6 +108,8 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => onRowClick?.(row.original)}
+                  className="cursor-pointer hover:bg-muted transition"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
