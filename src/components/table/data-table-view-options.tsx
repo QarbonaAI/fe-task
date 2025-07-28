@@ -1,13 +1,11 @@
 "use client"
 
-
-
-import { Settings2 } from "lucide-react"
+import { Filter } from "lucide-react"
 
 import { Button } from "../ui/button"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
+  DropdownMenuItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -22,6 +20,13 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
+  const handleSort = (columnId: string, direction: 'asc' | 'desc') => {
+    const column = table.getColumn(columnId);
+    if (column) {
+      column.toggleSorting(direction === 'desc');
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -30,31 +35,41 @@ export function DataTableViewOptions<TData>({
           size="sm"
           className="ml-auto hidden h-8 lg:flex"
         >
-          <Settings2 />
-          View
+          <Filter />
+          Filter
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-[200px]">
+        <DropdownMenuLabel>Sort by</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {table
-          .getAllColumns()
-          .filter(
-            (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide()
-          )
-          .map((column) => {
-            return (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                className="capitalize"
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              >
-                {column.id}
-              </DropdownMenuCheckboxItem>
-            )
-          })}
+        
+        {/* Title sorting */}
+        <DropdownMenuItem onClick={() => handleSort('title', 'asc')}>
+          Title (A-Z)
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleSort('title', 'desc')}>
+          Title (Z-A)
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
+        {/* Price sorting */}
+        <DropdownMenuItem onClick={() => handleSort('price', 'asc')}>
+          Price (Low to High)
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleSort('price', 'desc')}>
+          Price (High to Low)
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
+        {/* Rating sorting */}
+        <DropdownMenuItem onClick={() => handleSort('rating', 'asc')}>
+          Rating (Low to High)
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleSort('rating', 'desc')}>
+          Rating (High to Low)
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
