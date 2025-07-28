@@ -1,3 +1,5 @@
+"use client";
+
 import { type Table } from "@tanstack/react-table";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -22,10 +24,18 @@ import {
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  pageSize?: number;
+  setPageSize?: (size: number) => void;
+  pageIndex?: number;
+  setPageIndex?: (index: number) => void;
 }
 
 export function DataTablePagination<TData>({
   table,
+  pageSize,
+  setPageSize,
+  pageIndex,
+  setPageIndex,
 }: DataTablePaginationProps<TData>) {
   const [pageInput, setPageInput] = useState<string>("");
   const [isFirstPopoverOpen, setFirstPopoverOpen] = useState(false);
@@ -33,18 +43,18 @@ export function DataTablePagination<TData>({
   const [secondPageInput, setSecondPageInput] = useState<string>("");
 
   const handleSetPage = () => {
-    const pageIndex = Number(pageInput) - 1;
-    if (pageIndex >= 0 && pageIndex < table.getPageCount()) {
-      table.setPageIndex(pageIndex);
+    const targetPage = Number(pageInput) - 1;
+    if (targetPage >= 0 && targetPage < table.getPageCount()) {
+      setPageIndex?.(targetPage);
     }
     setPageInput("");
     setFirstPopoverOpen(false);
   };
 
   const handleSecondSetPage = () => {
-    const pageIndex = Number(secondPageInput) - 1;
-    if (pageIndex >= 0 && pageIndex < table.getPageCount()) {
-      table.setPageIndex(pageIndex);
+    const targetPage = Number(secondPageInput) - 1;
+    if (targetPage >= 0 && targetPage < table.getPageCount()) {
+      setPageIndex?.(targetPage);
     }
     setSecondPageInput("");
     setSecondPopoverOpen(false);
@@ -55,18 +65,20 @@ export function DataTablePagination<TData>({
       <div className="flex items-center space-x-2">
         <p className="text-sm font-medium">Rows per page</p>
         <Select
-          value={`${table.getState().pagination.pageSize}`}
+          value={`${pageSize ?? table.getState().pagination.pageSize}`}
           onValueChange={(value) => {
-            table.setPageSize(Number(value));
+            const size = Number(value);
+            table.setPageSize(size);
+            setPageSize?.(size);
           }}
         >
           <SelectTrigger className="h-8 w-[70px]">
             <SelectValue placeholder={table.getState().pagination.pageSize} />
           </SelectTrigger>
           <SelectContent side="top">
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <SelectItem key={pageSize} value={`${pageSize}`}>
-                {pageSize}
+            {[10, 20, 30, 40, 50].map((size) => (
+              <SelectItem key={size} value={`${size}`}>
+                {size}
               </SelectItem>
             ))}
           </SelectContent>
@@ -78,7 +90,7 @@ export function DataTablePagination<TData>({
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => table.previousPage()}
+                onClick={() => setPageIndex?.((pageIndex ?? 0) - 1)}
                 className={
                   !table.getCanPreviousPage()
                     ? "pointer-events-none opacity-50"
@@ -91,8 +103,8 @@ export function DataTablePagination<TData>({
             {table.getPageCount() > 0 && (
               <PaginationItem>
                 <PaginationLink
-                  isActive={table.getState().pagination.pageIndex === 0}
-                  onClick={() => table.setPageIndex(0)}
+                  isActive={pageIndex === 0}
+                  onClick={() => setPageIndex?.(0)}
                 >
                   1
                 </PaginationLink>
@@ -100,7 +112,7 @@ export function DataTablePagination<TData>({
             )}
 
             {/* First ellipsis */}
-            {table.getState().pagination.pageIndex > 2 && (
+            {(pageIndex ?? 0) > 2 && (
               <PaginationItem>
                 <Popover
                   open={isFirstPopoverOpen}
@@ -132,41 +144,38 @@ export function DataTablePagination<TData>({
               </PaginationItem>
             )}
 
-            {/* Current page and surrounding pages */}
+            {/* Current page range */}
             {table.getPageCount() > 1 &&
-              Array.from({ length: Math.min(3, table.getPageCount() - 2) }).map(
-                (_, i) => {
-                  const pageIndex = table.getState().pagination.pageIndex;
-                  let page;
+              Array.from({
+                length: Math.min(3, table.getPageCount() - 2),
+              }).map((_, i) => {
+                const currentIndex = pageIndex ?? 0;
+                let page;
+                if (currentIndex <= 2) {
+                  page = i + 1;
+                } else if (currentIndex >= table.getPageCount() - 3) {
+                  page = table.getPageCount() - 3 + i;
+                } else {
+                  page = currentIndex - 1 + i;
+                }
 
-                  if (pageIndex <= 2) {
-                    page = i + 1;
-                  } else if (pageIndex >= table.getPageCount() - 3) {
-                    page = table.getPageCount() - 3 + i;
-                  } else {
-                    page = pageIndex - 1 + i;
-                  }
+                if (page === 0 || page === table.getPageCount() - 1)
+                  return null;
 
-                  // Skip if this would duplicate first or last page
-                  if (page === 0 || page === table.getPageCount() - 1)
-                    return null;
-
-                  return (
-                    <PaginationItem key={page}>
-                      <PaginationLink
-                        isActive={pageIndex === page}
-                        onClick={() => table.setPageIndex(page)}
-                      >
-                        {page + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
-                },
-              )}
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      isActive={currentIndex === page}
+                      onClick={() => setPageIndex?.(page)}
+                    >
+                      {page + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
 
             {/* Second ellipsis */}
-            {table.getState().pagination.pageIndex <
-              table.getPageCount() - 3 && (
+            {(pageIndex ?? 0) < table.getPageCount() - 3 && (
               <PaginationItem>
                 <Popover
                   open={isSecondPopoverOpen}
@@ -212,11 +221,8 @@ export function DataTablePagination<TData>({
             {table.getPageCount() > 1 && (
               <PaginationItem>
                 <PaginationLink
-                  isActive={
-                    table.getState().pagination.pageIndex ===
-                    table.getPageCount() - 1
-                  }
-                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  isActive={pageIndex === table.getPageCount() - 1}
+                  onClick={() => setPageIndex?.(table.getPageCount() - 1)}
                 >
                   {table.getPageCount()}
                 </PaginationLink>
@@ -225,7 +231,7 @@ export function DataTablePagination<TData>({
 
             <PaginationItem>
               <PaginationNext
-                onClick={() => table.nextPage()}
+                onClick={() => setPageIndex?.((pageIndex ?? 0) + 1)}
                 className={
                   !table.getCanNextPage()
                     ? "pointer-events-none opacity-50"

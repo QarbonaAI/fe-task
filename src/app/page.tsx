@@ -1,10 +1,5 @@
-import Navbar from "@/components/navbar";
-
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  return (
-    <main className="min-h-screen overflow-auto">
-      <Navbar />
-    </main>
-  );
+  redirect("/products");
 }

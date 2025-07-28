@@ -1,11 +1,12 @@
-"use client"
+"use client";
 
-import { type Table } from "@tanstack/react-table"
-import { X } from "lucide-react"
-
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
-import { DataTableViewOptions } from "./data-table-view-options"
+import { type Table } from "@tanstack/react-table";
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { DataTableViewOptions } from "./data-table-view-options";
 
 interface FilterOption {
   columnId: string;
@@ -26,7 +27,12 @@ export function DataTableToolbar<TData>({
   table,
   filters = [],
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0
+  const isFiltered = table.getState().columnFilters.length > 0;
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
+  useEffect(() => {
+    table.getColumn("title")?.setFilterValue(debouncedQuery);
+  }, [debouncedQuery]);
 
   return (
     <div className="flex items-center justify-between">
@@ -53,5 +59,5 @@ export function DataTableToolbar<TData>({
       </div>
       <DataTableViewOptions table={table} />
     </div>
-  )
+  );
 }
