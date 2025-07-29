@@ -6,11 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Loader } from "lucide-react";
 
+export const ENDPOINT = "https://dummyjson.com";
+
 export default function HomePage() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const response = await axios.get("https://dummyjson.com/products");
+      const response = await axios.get(`${ENDPOINT}/products`);
       return response.data;
     },
   });

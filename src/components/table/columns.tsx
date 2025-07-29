@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import { ProductActions } from "../ProductActions";
 
 export type Product = {
   id: number;
@@ -74,5 +75,10 @@ export const columns: ColumnDef<Product>[] = [
         <span className="font-medium text-red-600">✗ Out of Stock</span>
       );
     },
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => <ProductActions product={row.original} />,
   },
 ];

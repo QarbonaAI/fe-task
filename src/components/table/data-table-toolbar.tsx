@@ -1,11 +1,12 @@
-"use client"
+"use client";
 
-import { type Table } from "@tanstack/react-table"
-import { X } from "lucide-react"
+import { type Table } from "@tanstack/react-table";
+import { X } from "lucide-react";
 
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
-import { DataTableViewOptions } from "./data-table-view-options"
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { DataTableViewOptions } from "./data-table-view-options";
+import { AddProductForm } from "../AddProductForm";
 
 interface FilterOption {
   columnId: string;
@@ -26,7 +27,7 @@ export function DataTableToolbar<TData>({
   table,
   filters = [],
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0
+  const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
     <div className="flex items-center justify-between">
@@ -51,7 +52,10 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex justify-between gap-x-2">
+        <AddProductForm />
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
-  )
+  );
 }
