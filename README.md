@@ -1,5 +1,7 @@
 # Frontend Task: Product Table with API Integration, Zod Validation & Navigation
 
+**Submitted by: Utkarsh Raj**
+
 ## Objective
 
 Enhance the existing Next.js boilerplate by integrating the [DummyJSON Products API](https://dummyjson.com/docs/products) into a data table. Implement full CRUD operations, pagination, sorting, form validation using Zod, routing with dynamic titles, and utilize **TanStack Query** for efficient data fetching and state management.
