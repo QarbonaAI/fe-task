@@ -6,15 +6,16 @@ import {
   type ColumnFiltersState,
   type SortingState,
   type VisibilityState,
+  type PaginationState,
+  type OnChangeFn,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
-import { useReactTable } from "@tanstack/react-table";
 
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -41,12 +42,18 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filters?: FilterOption[];
+  pageCount: number;
+  pagination: PaginationState;
+  setPagination: OnChangeFn<PaginationState>;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filters,
+  pageCount,
+  pagination,
+  setPagination,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -64,7 +71,11 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      pagination,
     },
+    pageCount: pageCount,
+    manualPagination: true,
+    onPaginationChange: setPagination,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -72,7 +83,6 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
