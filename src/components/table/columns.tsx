@@ -1,8 +1,10 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
 import { ProductActions } from "../ProductActions";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 export type Product = {
   id: number;
@@ -30,6 +32,23 @@ export const columns: ColumnDef<Product>[] = [
     ),
   },
   {
+    id: "view",
+    cell: ({ row }) => (
+      <Button
+        variant="outline"
+        className="rounded-full px-2.5"
+        title="View Product Details"
+      >
+        <Link
+          href={`/products/${row.original.id}`}
+          className="flex items-center gap-1 font-medium text-blue-600 hover:text-blue-800"
+        >
+          <Eye className="h-4 w-4" />
+        </Link>
+      </Button>
+    ),
+  },
+  {
     accessorKey: "price",
     header: ({ column }) => (
       <button
@@ -42,7 +61,7 @@ export const columns: ColumnDef<Product>[] = [
     ),
     cell: ({ row }) => {
       const price = row.getValue<number>("price");
-      return `$${price.toFixed(2)}`;
+      return `${price.toFixed(2)}`;
     },
   },
   {
@@ -64,17 +83,6 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "category",
     header: "Category",
-  },
-  {
-    accessorKey: "stock",
-    cell: ({ row }) => {
-      const stock = row.getValue<number>("stock");
-      return stock > 0 ? (
-        <span className="font-medium text-green-600">✓ In Stock</span>
-      ) : (
-        <span className="font-medium text-red-600">✗ Out of Stock</span>
-      );
-    },
   },
   {
     id: "actions",

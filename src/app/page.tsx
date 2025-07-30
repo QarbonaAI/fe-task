@@ -20,7 +20,7 @@ export default function HomePage() {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center gap-2">
-        <Loader className="animate-[spin_2s_linear_infinite]" />
+        <Loader className="animate-spin" />
         Loading...
       </div>
     );
