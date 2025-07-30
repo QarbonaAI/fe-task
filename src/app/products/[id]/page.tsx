@@ -9,24 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ENDPOINT } from "@/app/page";
 import Image from "next/image";
-import Navbar from "@/components/navbar";
-
-interface ProductDetail {
-  title: string;
-  price: number;
-  discountPercentage: number;
-  rating: number;
-  stock: number;
-  brand: string;
-  category: string;
-  thumbnail: string;
-  images: string[];
-  tags: string[];
-  warrantyInformation?: string;
-  shippingInformation?: string;
-  availabilityStatus?: string;
-  minimumOrderQuantity?: number;
-}
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -78,7 +60,6 @@ export default function ProductDetailPage() {
 
   return (
     <div>
-      <Navbar />
       <div className="container mx-auto py-4">
         <div className="mb-6">
           <Button
