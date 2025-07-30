@@ -33,9 +33,7 @@ export default function RootLayout({
         >
           <QueryProvider>
             <ToastContainer />
-            <div className="h-screen max-h-screen overflow-hidden">
-              {children}
-            </div>
+            <div className="h-screen max-h-screen">{children}</div>
           </QueryProvider>
         </ThemeProvider>
       </body>
